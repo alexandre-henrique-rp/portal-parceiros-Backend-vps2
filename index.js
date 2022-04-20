@@ -38,6 +38,7 @@ app.post('/login', async (req, res) => {
           }
      });
 
+
      if (user === null) { //verifica se o usuario existe
           return res.status(400).end({
                erro: true,
@@ -59,7 +60,11 @@ app.post('/login', async (req, res) => {
                id: user.idagrv,
                nome: user.nome,
                numeropolo: user.numeropolo,
-
+               cel: user.whatsapp,
+               a1pf: user.a1pf_12m,
+               a3pf: user.a3pf_36m,
+               a1pj: user.a1pj_12m,
+               a3pj: user.a3pj_36m,
           },
           token: token
 
@@ -135,16 +140,19 @@ app.get('/usuario/:id', eAdmin, async (req, res, next) => {
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // usuario update
 
-app.put('/usuario/:id', eAdmin, async (req, res, next) => {
+app.put('/usuario/update/:id', eAdmin, async (req, res, next) => {
 
      var dados = req.body;
 
      const usuario = await User.update(dados, {
-          attributes: ['idagrv', 'nome', 'cpf', 'nascimento', 'rg', 'logradouro', 'numero', 'complemento', 'cep', 'municipio', 'uf', 'bairro', 'whatsapp', 'email', 'chavepix', 'tipopix', 'numeropolo', 'a1pj_12m', 'a3pj_36m', 'a1pf_12m', 'a3pf_36m'],
+          attributes: ['idagrv', 'nome', 'cpf', 'nascimento', 'rg', 'logradouro', 'numero', 'complemento', 'bairro', 'cep', 'municipio', 'uf', 'whatsapp', 'chavepix', 'tipopix', 'numeropolo', 'a1pj_12m', 'a3pj_36m', 'a1pf_12m', 'a3pf_36m'],
           where: {
                idagrv: req.params.id,
+
           },
      })
+
+     
 
           .then((usuario) => {
                return res.json({
@@ -167,9 +175,9 @@ app.put('/usuario/:id', eAdmin, async (req, res, next) => {
 app.put('/cliente/update/:id', async (req, res, next) => {
 
      var dados = req.body;
-
+     
      const cliente = await Cliente.update(dados, {
-          attributes: ['id', 'unidade', 'nome', 'cpf', 'rg', 'dtnascimento', 'reg_cnh', 'razaosocial', 'cei', 'cnpj', 'telefone', 'ct_parcela', 'valorcd', 'tipocd', 'formapgto', 'hr_agenda', 'email', 'dt_agenda'],
+          attributes: ['id', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'comissaoparceiro', 'scp', 'observacao', 'historico', 'agrv'],
           where: {
                id: req.params.id,
           },
@@ -195,7 +203,7 @@ app.put('/cliente/excluir/:id', eAdmin, async (req, res, next) => {
      var dados = req.body;
 
      const cliente = await Cliente.update(dados, {
-          attributes: ['id', 'unidade'],
+          attributes: ['id', 'unidade', 'dt_agenda', 'hr_agenda'],
           where: {
                id: req.params.id,
           },
@@ -221,7 +229,7 @@ app.put('/cliente/excluir/:id', eAdmin, async (req, res, next) => {
 app.get('/clientes/:numeropolo', eAdmin, async (req, res, next) => {
 
      const clientes = await Cliente.findAll({
-          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh'],
+          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'createdAt', 'scp', 'comissaoparceiro'],
           where: {
                unidade: req.params.numeropolo
           },
@@ -238,7 +246,7 @@ app.get('/clientes/:numeropolo', eAdmin, async (req, res, next) => {
 app.get('/cliente/get/:id', eAdmin, async (req, res, next) => {
 
      const clientes = await Cliente.findOne({
-          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh'],
+          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'estatos_pgto', 'andamento', 'createdAt', 'historico', 'ct_parcela', 'scp', 'comissaoparceiro'],
           where: {
                id: req.params.id,
           },
@@ -258,7 +266,7 @@ app.post('/cadastrar/cliente', eAdmin, async (req, res) => {
 
 
      const cliente = await Cliente.findOne({
-          attributes: ['dt_agenda', 'andamento', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'unidade', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'validacao', 'referencia'],
+          attributes: ['dt_agenda', 'andamento', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'unidade', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'validacao', 'referencia', 'comissaoparceiro', 'scp', 'obscont', 'estatos_pgto', 'observacao', 'historico', 'custocd'],
           where: {
                email: req.body.email,
                cpf: req.body.cpf,
@@ -279,12 +287,18 @@ app.post('/cadastrar/cliente', eAdmin, async (req, res) => {
                razaosocial: req.body.razaosocial,
                validacao: req.body.validacao,
                referencia: req.body.referencia,
-
+               comissaoparceiro: req.body.comissaoparceiro,
+               scp: req.body.scp,
+               obscont: req.body.obscont,
+               estatos_pgto: req.body.estatos_pgto,
+               observacao: req.body.observacao,
+               historico: req.body.historico,
+               custocd: req.body.custocd
           }
      })
-      var dados = req.body;
+     var dados = req.body;
 
-      await Cliente.create(dados)
+     await Cliente.create(dados)
           .then(() => {
 
                return res.json({ error: false, message: 'cliente cadastrado com sucesso!' });
@@ -297,17 +311,20 @@ app.post('/cadastrar/cliente', eAdmin, async (req, res) => {
 });
 
 app.get('/cliente/robo/:id', eAdmin, async (req, res) => {
-     async function setJson() {
-          const id = req.params.id;
-          const url = `https://redebrasilrp.com.br/fcw2/integracao/integrar_soluti_revendedor.php?idfcw=${id}`;
-          console.log(req.params.id)
+
+     
+
+     (async () => {
           const browser = await puppeteer.launch();
           const page = await browser.newPage();
-          await page.goto(url);
+          await page.goto('https://example.com');
+          await page.screenshot({ path: 'example.png' });
 
           await browser.close();
-     }
-     setJson();
+     })();
+
+
+    
 });
 
 const server = http.createServer(app);

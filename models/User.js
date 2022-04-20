@@ -44,6 +44,8 @@ const User = db.define('AGRV', {
      a3pj_36m: Sequelize.INTEGER(11),
      a1pf_12m: Sequelize.INTEGER(11),
      a3pf_36m: Sequelize.INTEGER(11),
+     bairro: Sequelize.TEXT,
+     tipopix: Sequelize.TEXT,
      
 }, { freezeTableName: true });
 
