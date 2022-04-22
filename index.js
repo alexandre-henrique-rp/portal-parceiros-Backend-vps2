@@ -230,7 +230,7 @@ app.put('/cliente/excluir/:id', eAdmin, async (req, res, next) => {
 app.get('/clientes/:numeropolo', eAdmin, async (req, res, next) => {
 
      const clientes = await Cliente.findAll({
-          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'createdAt', 'scp', 'comissaoparceiro', 'solicitacao'],
+          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custoCdpar', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'createdAt', 'scp', 'comissaoparceiro', 'solicitacao'],
           where: {
                unidade: req.params.numeropolo
           },
@@ -247,7 +247,7 @@ app.get('/clientes/:numeropolo', eAdmin, async (req, res, next) => {
 app.get('/cliente/get/:id', eAdmin, async (req, res, next) => {
 
      const clientes = await Cliente.findOne({
-          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'estatos_pgto', 'andamento', 'createdAt', 'historico', 'ct_parcela', 'scp', 'comissaoparceiro'],
+          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custoCdpar', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'estatos_pgto', 'andamento', 'createdAt', 'historico', 'ct_parcela', 'scp', 'comissaoparceiro', 'solicitacao'],
           where: {
                id: req.params.id,
           },
@@ -267,7 +267,7 @@ app.post('/cadastrar/cliente', eAdmin, async (req, res) => {
 
 
      const cliente = await Cliente.findOne({
-          attributes: ['dt_agenda', 'andamento', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'unidade', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'validacao', 'referencia', 'comissaoparceiro', 'scp', 'obscont', 'estatos_pgto', 'observacao', 'historico', 'custocd'],
+          attributes: ['dt_agenda', 'andamento', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'unidade', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'validacao', 'referencia', 'comissaoparceiro', 'scp', 'obscont', 'estatos_pgto', 'observacao', 'historico', 'custoCdpar'],
           where: {
                email: req.body.email,
                cpf: req.body.cpf,
@@ -294,8 +294,9 @@ app.post('/cadastrar/cliente', eAdmin, async (req, res) => {
                estatos_pgto: req.body.estatos_pgto,
                observacao: req.body.observacao,
                historico: req.body.historico,
-               custocd: req.body.custocd
+               custoCdpar: req.body.custoCdpar
           }
+
      })
      var dados = req.body;
 
@@ -331,6 +332,7 @@ app.get('/cliente/robo/:id', eAdmin, async (req, res) => {
 // email
 app.post('/send/email', function (req, res) {
 
+     let id = req.body.id;
      let email = req.body.email;
      let nome = req.body.nome;
      let titulo = req.body.titulo;
@@ -357,15 +359,8 @@ app.post('/send/email', function (req, res) {
           from: process.env.EMAIL_USER,
           to: email,
           subject: `Termo de Emissão: ${titulo}`,
-          text: `Prezado ${nome},\n\n
-          Link para download do assistente de Emissão: 'https://redebrasilrp.com.br/' \n
-          Em seguida clique no botão verde *EMISSOR*(faça o download e execute)\n
-          Código de Emissão: ${solicitacao} ${document}\n
-          Senha de Emissão: usar a que o ciente criou\n
-          ou\n
-          Senha de Emissão Padrão: ${senha}\n
-          Modelo do certificado: ${tipocd}`,
-
+          //text: `Prezado ${nome},\n\nLink para download do assistente de Emissão: 'https://redebrasilrp.com.br/' \nEm seguida clique no botão verde *EMISSOR*(faça o download e execute)\nCódigo de Emissão: ${solicitacao} ${document}\nSenha de Emissão: usar a que o ciente criou\nou\nSenha de Emissão Padrão: ${senha}\nModelo do certificado: ${tipocd}`,
+          html: '<h1>Prezado ' + nome + '</h1><br><br><p>Link para download do assistente de Emissão: <a href="https://redebrasilrp.com.br/">https://redebrasilrp.com.br/</a><br>Em seguida clique no botão verde <strong>EMISSOR</strong>(faça o download e execute),<br>Código de Emissão: <strong>' + solicitacao + ' ' + document + '</strong>,<br>Senha de Emissão: <strong>Entrar em contato com seu Revendedor</strong><br>Modelo do certificado: <strong>' + tipocd + '</strong><br>Codigo do cliente: <strong>' + id + '</strong>',
      })
           .then(info => {
                res.status(200).send(info)
