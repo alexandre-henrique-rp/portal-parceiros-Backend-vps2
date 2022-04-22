@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const puppeteer = require('puppeteer');
+const nodemailer = require('nodemailer');
 
 
 const app = express();
@@ -152,7 +153,7 @@ app.put('/usuario/update/:id', eAdmin, async (req, res, next) => {
           },
      })
 
-     
+
 
           .then((usuario) => {
                return res.json({
@@ -175,7 +176,7 @@ app.put('/usuario/update/:id', eAdmin, async (req, res, next) => {
 app.put('/cliente/update/:id', async (req, res, next) => {
 
      var dados = req.body;
-     
+
      const cliente = await Cliente.update(dados, {
           attributes: ['id', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'comissaoparceiro', 'scp', 'observacao', 'historico', 'agrv'],
           where: {
@@ -229,7 +230,7 @@ app.put('/cliente/excluir/:id', eAdmin, async (req, res, next) => {
 app.get('/clientes/:numeropolo', eAdmin, async (req, res, next) => {
 
      const clientes = await Cliente.findAll({
-          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'createdAt', 'scp', 'comissaoparceiro'],
+          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custocd', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'createdAt', 'scp', 'comissaoparceiro', 'solicitacao'],
           where: {
                unidade: req.params.numeropolo
           },
@@ -312,7 +313,7 @@ app.post('/cadastrar/cliente', eAdmin, async (req, res) => {
 
 app.get('/cliente/robo/:id', eAdmin, async (req, res) => {
 
-     
+
 
      (async () => {
           const browser = await puppeteer.launch();
@@ -324,8 +325,57 @@ app.get('/cliente/robo/:id', eAdmin, async (req, res) => {
      })();
 
 
-    
+
 });
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// email
+app.post('/send/email', function (req, res) {
+
+     let email = req.body.email;
+     let nome = req.body.nome;
+     let titulo = req.body.titulo;
+     let solicitacao = req.body.solicitacao;
+     let document = req.body.document;
+     let senha = req.body.senha;
+     let tipocd = req.body.tipocd;
+
+     const transporter = nodemailer.createTransport({
+          host: process.env.EMAIL_HOST,
+          port: process.env.EMAIL_PORT,
+          secureConnection: false,
+          requireTLS: false,
+          auth: {
+               user: process.env.EMAIL_USER,
+               pass: process.env.EMAIL_PASSWORD,
+          },
+          tls: {
+               // do not fail on invalid certs
+               rejectUnauthorized: false,
+          },
+     })
+     transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: `Termo de Emissão: ${titulo}`,
+          text: `Prezado ${nome},\n\n
+          Link para download do assistente de Emissão: 'https://redebrasilrp.com.br/' \n
+          Em seguida clique no botão verde *EMISSOR*(faça o download e execute)\n
+          Código de Emissão: ${solicitacao} ${document}\n
+          Senha de Emissão: usar a que o ciente criou\n
+          ou\n
+          Senha de Emissão Padrão: ${senha}\n
+          Modelo do certificado: ${tipocd}`,
+
+     })
+          .then(info => {
+               res.status(200).send(info)
+               console.log(info)
+          }).catch(error => {
+               res.status(500).send(error)
+               console.error('Email incorreto')
+          })
+});
+
 
 const server = http.createServer(app);
 server.listen(process.env.PORT || 3034, function () {
