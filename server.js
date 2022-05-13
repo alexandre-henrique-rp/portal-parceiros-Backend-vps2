@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const puppeteer = require('puppeteer');
 const nodemailer = require('nodemailer');
+const { Op } = require('sequelize');
 
 
 const app = express();
@@ -119,7 +120,7 @@ app.post('/test', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // usuario
-app.get('/usuario/:id', eAdmin, async (req, res, next) => {
+app.get('/usuario/:id', async (req, res, next) => {
      // app.get('/usuario', async (req, res, next) => {
 
      const usuario = await User.findOne({
@@ -226,15 +227,17 @@ app.put('/cliente/excluir/:id', eAdmin, async (req, res, next) => {
 });
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// cliente
-app.get('/clientes/:numeropolo', eAdmin, async (req, res, next) => {
+// cliente eAdmin,
+app.get('/clientes/:numeropolo', async (req, res, next) => {
 
      const clientes = await Cliente.findAll({
-          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custoCdpar', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'createdAt', 'scp', 'comissaoparceiro', 'solicitacao'],
+          attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custoCdpar', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'createdAt', 'estatos_pgto', 'andamento', 'scp', 'comissaoparceiro', 'solicitacao'],
           where: {
-               unidade: req.params.numeropolo
+               unidade: req.params.numeropolo,
+               createdAt: {
+                    [Op.gte]: new Date(new Date() - 35 * 60 * 60 * 60 * 1000),
+               }
           },
-
      })
           .then((clientes) => {
                res.json(clientes)
