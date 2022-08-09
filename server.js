@@ -42,7 +42,7 @@ app.post('/login', async (req, res) => {
 
 
      if (user === null) { //verifica se o usuario existe
-          return res.status(400).end({
+          return res.status(400).send({
                erro: true,
                message: 'Erro: Usuário ou senha incorreto!'
           });
