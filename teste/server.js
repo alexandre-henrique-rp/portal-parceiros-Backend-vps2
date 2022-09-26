@@ -142,7 +142,7 @@ app.get('/usuario/:id', async (req, res, next) => {
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // usuario update
 
-app.put('/usuario/update/:id', eAdmin, async (req, res, next) => {
+app.put('/usuario/update/:id', async (req, res, next) => {
 
      var dados = req.body;
 
@@ -227,7 +227,7 @@ app.put('/cliente/excluir/:id', async (req, res, next) => {
 });
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// cliente eAdmin,
+// cliente
 app.get('/clientes/:numeropolo', async (req, res, next) => {
 
      const clientes = await Cliente.findAll({
@@ -247,7 +247,7 @@ app.get('/clientes/:numeropolo', async (req, res, next) => {
           })
 });
 
-app.get('/cliente/get/:id', eAdmin, async (req, res, next) => {
+app.get('/cliente/get/:id', async (req, res, next) => {
 
      const clientes = await Cliente.findOne({
           attributes: ['id', 'unidade', 'andamento', 'cpf', 'cnpj', 'nome', 'razaosocial', 'unico', 'tipocd', 'valorcd', 'custoCdpar', 'estatos_pgto', 'formapgto', 'telefone', 'email', 'dtnascimento', 'rg', 'cei', 'vctoCD', 'dt_aprovacao', 'dt_agenda', 'hr_agenda', 'obs_agenda', 'reg_cnh', 'estatos_pgto', 'andamento', 'createdAt', 'historico', 'ct_parcela', 'scp', 'comissaoparceiro', 'solicitacao'],
@@ -268,7 +268,6 @@ app.get('/cliente/get/:id', eAdmin, async (req, res, next) => {
 // create cliente
 app.post('/cadastrar/cliente', async (req, res) => {
 
-
      const cliente = await Cliente.findOne({
           attributes: ['dt_agenda', 'andamento', 'nome', 'email', 'rg', 'cpf', 'cnpj', 'unidade', 'tipocd', 'hr_agenda', 'formapgto', 'valorcd', 'ct_parcela', 'telefone', 'dtnascimento', 'reg_cnh', 'cei', 'razaosocial', 'validacao', 'referencia', 'comissaoparceiro', 'scp', 'obscont', 'estatos_pgto', 'observacao', 'historico', 'custoCdpar'],
      })
@@ -286,7 +285,7 @@ app.post('/cadastrar/cliente', async (req, res) => {
           });
 });
 
-app.get('/cliente/robo/:id', eAdmin, async (req, res) => {
+app.get('/cliente/robo/:id', async (req, res) => {
 
 
 
