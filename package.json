@@ -1,6 +1,6 @@
 {
   "name": "portal-parceiros-backend-vps",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "portal de revenda",
   "main": "server.js",
   "scripts": {
@@ -21,8 +21,6 @@
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
-    "pm2": "^5.2.0",
-    "puppeteer": "^13.5.2",
     "sequelize": "^6.17.0"
   }
 }
