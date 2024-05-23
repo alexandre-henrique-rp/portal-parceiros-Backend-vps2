@@ -506,7 +506,7 @@ async function EmailEnvio(email, subject, conteudo) {
       secure: true,
       auth: {
         user: "redebrasilrp@gmail.com",
-        pass: "qhwp rkii sses ezwm",
+        pass: process.env.EMAIL_PASSWORD,
       },
       tls: {
         rejectUnauthorized: false,
